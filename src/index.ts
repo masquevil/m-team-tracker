@@ -1,8 +1,10 @@
 import { getMTeamTorrentDownloadLink, searchMTeamTorrents } from ':apis/mTeam';
-import { downloadFile } from ':utils/download';
+import { Minute } from ':utils/constants';
+import { createDownloadDirectory, downloadFile } from ':utils/download';
 import { isEndTimeGreaterThanTwoDays } from ':utils/time';
 
-(async () => {
+async function run() {
+  await createDownloadDirectory();
   const torrents = await searchMTeamTorrents(1, 30);
 
   const freeTorrents = torrents.filter(
@@ -13,10 +15,20 @@ import { isEndTimeGreaterThanTwoDays } from ':utils/time';
   );
 
   for (const torrent of freeTorrents) {
-    console.log('download torrent:', torrent.name);
+    console.log('download torrent:', torrent.id, torrent.name);
     const torrentDownloadUrl = await getMTeamTorrentDownloadLink(torrent.id);
     const fileName = `${torrent.id}.torrent`;
     const { downloadStatus } = await downloadFile(torrentDownloadUrl, fileName);
     console.log('status:', downloadStatus);
+  }
+}
+
+(async () => {
+  await run();
+
+  if (process.env.NODE_ENV === 'production') {
+    setInterval(() => {
+      run();
+    }, Minute * 5);
   }
 })();

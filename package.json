@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node --transpile-only -r tsconfig-paths/register src/index.ts"
+    "dev": "NODE_ENV=development ts-node --transpile-only -r tsconfig-paths/register src/index.ts",
+    "start": "NODE_ENV=production ts-node --transpile-only -r tsconfig-paths/register src/index.ts"
   },
   "dependencies": {
     "axios": "^1.7.7",

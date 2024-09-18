@@ -1,6 +1,6 @@
 import FormData from 'form-data';
 import axios from ':utils/axios';
-import { MTeamAPIToken } from ':utils/constants';
+import { getMTeamAPIToken } from ':utils/misc';
 
 export type MTeamTorrent = {
   id: string;
@@ -29,7 +29,7 @@ export async function searchMTeamTorrents(
     },
     {
       headers: {
-        'x-api-key': MTeamAPIToken,
+        'x-api-key': getMTeamAPIToken(),
       },
     },
   );
@@ -51,7 +51,7 @@ export async function getMTeamTorrentDownloadLink(torrentId: string): Promise<st
 
   const res = await axios.post('https://api.m-team.cc/api/torrent/genDlToken', formData, {
     headers: {
-      'x-api-key': MTeamAPIToken,
+      'x-api-key': getMTeamAPIToken(),
       'Content-Type': 'multipart/form-data',
     },
   });

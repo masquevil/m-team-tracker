@@ -4,6 +4,18 @@ import axios from ':utils/axios';
 
 const downloadDirectory = path.resolve(__dirname, '../../downloads');
 
+export async function createDownloadDirectory() {
+  const isExists = await fs.promises
+    .access(downloadDirectory)
+    .then(() => true)
+    .catch(() => false);
+  if (isExists) {
+    return;
+  }
+
+  await fs.promises.mkdir(downloadDirectory, { recursive: true });
+}
+
 export async function downloadFile(url: string, fileName: string) {
   const filePath = path.join(downloadDirectory, fileName);
   const isExists = await fs.promises
