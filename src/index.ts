@@ -5,7 +5,7 @@ import { isEndTimeGreaterThanTwoDays } from ':utils/time';
 
 async function run() {
   await createDownloadDirectory();
-  const torrents = await searchMTeamTorrents(1, 30);
+  const torrents = await searchMTeamTorrents(1, 50);
 
   const freeTorrents = torrents.filter(
     (torrent) =>
