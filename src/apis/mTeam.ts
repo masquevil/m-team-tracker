@@ -65,38 +65,38 @@ export async function searchMTeamTorrents(
 
   const data = [...adultRes.data.data.data, ...allRes.data.data.data];
 
-  console.log(
-    "\n\nsearch result:",
-    data.map(
-      ({
-        id,
-        name,
-        smallDescr,
-        status: {
-          discount,
-          discountEndTime,
-          toppingLevel,
-          toppingEndTime,
-          seeders,
-          leechers,
-          mallSingleFree,
-        },
-      }) => ({
-        id,
-        name,
-        smallDescr,
-        status: {
-          discount,
-          discountEndTime,
-          toppingLevel,
-          toppingEndTime,
-          seeders,
-          leechers,
-        },
-        mallSingleFree,
-      })
-    )
-  );
+  // console.log(
+  //   "\n\nsearch result:",
+  //   data.map(
+  //     ({
+  //       id,
+  //       name,
+  //       smallDescr,
+  //       status: {
+  //         discount,
+  //         discountEndTime,
+  //         toppingLevel,
+  //         toppingEndTime,
+  //         seeders,
+  //         leechers,
+  //         mallSingleFree,
+  //       },
+  //     }) => ({
+  //       id,
+  //       name,
+  //       smallDescr,
+  //       status: {
+  //         discount,
+  //         discountEndTime,
+  //         toppingLevel,
+  //         toppingEndTime,
+  //         seeders,
+  //         leechers,
+  //       },
+  //       mallSingleFree,
+  //     })
+  //   )
+  // );
 
   return data;
 }

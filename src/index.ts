@@ -22,7 +22,7 @@ async function run() {
         isEndTimeGreaterThanOneDays(torrent.status.discountEndTime))
   );
 
-  console.log("free torrents:", freeTorrents.length);
+  console.log("Find free torrents:", freeTorrents.length);
 
   for (const torrent of freeTorrents) {
     console.log("download torrent:", torrent.id, torrent.name);
