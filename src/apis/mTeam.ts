@@ -1,63 +1,106 @@
-import FormData from 'form-data';
-import axios from ':utils/axios';
-import { getMTeamAPIToken } from ':utils/misc';
+import FormData from "form-data";
+import axios from ":utils/axios";
+import { getMTeamAPIToken } from ":utils/misc";
 
 export type MTeamTorrent = {
   id: string;
   name: string;
   status: {
-    toppingLevel: '0' | '1';
+    toppingLevel: "0" | "1";
     toppingEndTime: null | string;
-    discount: 'FREE' | 'PERCENT_50';
+    discount: "FREE" | "PERCENT_50";
     discountEndTime: null | string;
+    seeders: number;
+    leechers: number;
   };
   imageList: string[];
 };
 
 export async function searchMTeamTorrents(
   pageNumber: number,
-  pageSize: number,
+  pageSize: number
 ): Promise<MTeamTorrent[]> {
   const res = await axios.post(
-    'https://api.m-team.io/api/torrent/search',
+    "https://api.m-team.io/api/torrent/search",
     {
-      mode: 'adult',
+      // mode: "adult",
       pageNumber,
       pageSize,
       visible: 1,
       categories: [],
+      sortField: "leechers",
+      sortType: "desc",
     },
     {
       headers: {
-        'x-api-key': getMTeamAPIToken(),
+        "x-api-key": getMTeamAPIToken(),
       },
-    },
+    }
   );
 
-  if (res.status !== 200 || res.data.message !== 'SUCCESS') {
-    throw new Error('Failed to fetch M-Team torrents');
+  if (res.status !== 200 || res.data.message !== "SUCCESS") {
+    throw new Error("Failed to fetch M-Team torrents");
   }
+
+  // console.log(
+  //   "\n\nsearch result:",
+  //   res?.data?.data?.data?.map(
+  //     ({
+  //       id,
+  //       name,
+  //       smallDescr,
+  //       status: {
+  //         discount,
+  //         discountEndTime,
+  //         toppingLevel,
+  //         toppingEndTime,
+  //         seeders,
+  //         leechers,
+  //         mallSingleFree,
+  //       },
+  //     }) => ({
+  //       id,
+  //       name,
+  //       smallDescr,
+  //       status: {
+  //         discount,
+  //         discountEndTime,
+  //         toppingLevel,
+  //         toppingEndTime,
+  //         seeders,
+  //         leechers,
+  //       },
+  //       mallSingleFree,
+  //     })
+  //   )
+  // );
 
   return res.data.data.data;
 }
 
-export async function getMTeamTorrentDownloadLink(torrentId: string): Promise<string> {
+export async function getMTeamTorrentDownloadLink(
+  torrentId: string
+): Promise<string> {
   if (isNaN(Number(torrentId))) {
-    throw new Error('Invalid torrent ID');
+    throw new Error("Invalid torrent ID");
   }
 
   const formData = new FormData();
-  formData.append('id', torrentId);
+  formData.append("id", torrentId);
 
-  const res = await axios.post('https://api.m-team.cc/api/torrent/genDlToken', formData, {
-    headers: {
-      'x-api-key': getMTeamAPIToken(),
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  const res = await axios.post(
+    "https://api.m-team.cc/api/torrent/genDlToken",
+    formData,
+    {
+      headers: {
+        "x-api-key": getMTeamAPIToken(),
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-  if (res.status !== 200 || res.data.message !== 'SUCCESS') {
-    throw new Error('Failed to fetch M-Team torrent download link');
+  if (res.status !== 200 || res.data.message !== "SUCCESS") {
+    throw new Error("Failed to fetch M-Team torrent download link");
   }
 
   return res.data.data;

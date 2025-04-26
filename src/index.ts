@@ -1,7 +1,7 @@
-import { getMTeamTorrentDownloadLink, searchMTeamTorrents } from ':apis/mTeam';
-import { Minute } from ':utils/constants';
-import { createDownloadDirectory, downloadFile } from ':utils/download';
-import { isEndTimeGreaterThanTwoDays } from ':utils/time';
+import { getMTeamTorrentDownloadLink, searchMTeamTorrents } from ":apis/mTeam";
+import { Minute } from ":utils/constants";
+import { createDownloadDirectory, downloadFile } from ":utils/download";
+import { isEndTimeGreaterThanTwoDays } from ":utils/time";
 
 async function run() {
   await createDownloadDirectory();
@@ -9,24 +9,29 @@ async function run() {
 
   const freeTorrents = torrents.filter(
     (torrent) =>
-      torrent.status.toppingLevel === '1' &&
-      torrent.status.discount !== 'FREE' &&
-      isEndTimeGreaterThanTwoDays(torrent.status.toppingEndTime),
+      // case 1: topping
+      (torrent.status.toppingLevel === "1" &&
+        torrent.status.discount !== "FREE" &&
+        isEndTimeGreaterThanTwoDays(torrent.status.toppingEndTime)) ||
+      // case 2: discount
+      (torrent.status.discount === "FREE" &&
+        torrent.status.leechers > torrent.status.seeders &&
+        isEndTimeGreaterThanTwoDays(torrent.status.discountEndTime))
   );
 
   for (const torrent of freeTorrents) {
-    console.log('download torrent:', torrent.id, torrent.name);
+    console.log("download torrent:", torrent.id, torrent.name);
     const torrentDownloadUrl = await getMTeamTorrentDownloadLink(torrent.id);
     const fileName = `${torrent.id}.torrent`;
     const { downloadStatus } = await downloadFile(torrentDownloadUrl, fileName);
-    console.log('status:', downloadStatus);
+    console.log("status:", downloadStatus);
   }
 }
 
 (async () => {
   await run();
 
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     setInterval(() => {
       run();
     }, Minute * 5);
