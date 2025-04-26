@@ -10,8 +10,8 @@ export type MTeamTorrent = {
     toppingEndTime: null | string;
     discount: "FREE" | "PERCENT_50";
     discountEndTime: null | string;
-    seeders: number;
-    leechers: number;
+    seeders: string;
+    leechers: string;
   };
   imageList: string[];
 };
@@ -20,14 +20,30 @@ export async function searchMTeamTorrents(
   pageNumber: number,
   pageSize: number
 ): Promise<MTeamTorrent[]> {
-  const res = await axios.post(
+  const adultRes = await axios.post(
     "https://api.m-team.io/api/torrent/search",
     {
-      // mode: "adult",
+      mode: "adult",
       pageNumber,
       pageSize,
       visible: 1,
       categories: [],
+    },
+    {
+      headers: {
+        "x-api-key": getMTeamAPIToken(),
+      },
+    }
+  );
+  const allRes = await axios.post(
+    "https://api.m-team.io/api/torrent/search",
+    {
+      mode: "normal",
+      pageNumber,
+      pageSize,
+      visible: 1,
+      categories: [],
+      discount: "FREE",
       sortField: "leechers",
       sortType: "desc",
     },
@@ -38,44 +54,51 @@ export async function searchMTeamTorrents(
     }
   );
 
-  if (res.status !== 200 || res.data.message !== "SUCCESS") {
+  if (
+    adultRes.status !== 200 ||
+    adultRes.data.message !== "SUCCESS" ||
+    allRes.status !== 200 ||
+    allRes.data.message !== "SUCCESS"
+  ) {
     throw new Error("Failed to fetch M-Team torrents");
   }
 
-  // console.log(
-  //   "\n\nsearch result:",
-  //   res?.data?.data?.data?.map(
-  //     ({
-  //       id,
-  //       name,
-  //       smallDescr,
-  //       status: {
-  //         discount,
-  //         discountEndTime,
-  //         toppingLevel,
-  //         toppingEndTime,
-  //         seeders,
-  //         leechers,
-  //         mallSingleFree,
-  //       },
-  //     }) => ({
-  //       id,
-  //       name,
-  //       smallDescr,
-  //       status: {
-  //         discount,
-  //         discountEndTime,
-  //         toppingLevel,
-  //         toppingEndTime,
-  //         seeders,
-  //         leechers,
-  //       },
-  //       mallSingleFree,
-  //     })
-  //   )
-  // );
+  const data = [...adultRes.data.data.data, ...allRes.data.data.data];
 
-  return res.data.data.data;
+  console.log(
+    "\n\nsearch result:",
+    data.map(
+      ({
+        id,
+        name,
+        smallDescr,
+        status: {
+          discount,
+          discountEndTime,
+          toppingLevel,
+          toppingEndTime,
+          seeders,
+          leechers,
+          mallSingleFree,
+        },
+      }) => ({
+        id,
+        name,
+        smallDescr,
+        status: {
+          discount,
+          discountEndTime,
+          toppingLevel,
+          toppingEndTime,
+          seeders,
+          leechers,
+        },
+        mallSingleFree,
+      })
+    )
+  );
+
+  return data;
 }
 
 export async function getMTeamTorrentDownloadLink(

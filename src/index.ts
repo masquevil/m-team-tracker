@@ -1,7 +1,10 @@
 import { getMTeamTorrentDownloadLink, searchMTeamTorrents } from ":apis/mTeam";
 import { Minute } from ":utils/constants";
 import { createDownloadDirectory, downloadFile } from ":utils/download";
-import { isEndTimeGreaterThanTwoDays } from ":utils/time";
+import {
+  isEndTimeGreaterThanTwoDays,
+  isEndTimeGreaterThanOneDays,
+} from ":utils/time";
 
 async function run() {
   await createDownloadDirectory();
@@ -15,9 +18,11 @@ async function run() {
         isEndTimeGreaterThanTwoDays(torrent.status.toppingEndTime)) ||
       // case 2: discount
       (torrent.status.discount === "FREE" &&
-        torrent.status.leechers > torrent.status.seeders &&
-        isEndTimeGreaterThanTwoDays(torrent.status.discountEndTime))
+        +torrent.status.leechers > +torrent.status.seeders &&
+        isEndTimeGreaterThanOneDays(torrent.status.discountEndTime))
   );
+
+  console.log("free torrents:", freeTorrents.length);
 
   for (const torrent of freeTorrents) {
     console.log("download torrent:", torrent.id, torrent.name);
