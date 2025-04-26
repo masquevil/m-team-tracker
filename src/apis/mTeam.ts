@@ -13,6 +13,7 @@ export type MTeamTorrent = {
     seeders: string;
     leechers: string;
   };
+  size: string;
   imageList: string[];
 };
 
@@ -38,7 +39,7 @@ export async function searchMTeamTorrents(
   const allRes = await axios.post(
     "https://api.m-team.io/api/torrent/search",
     {
-      mode: "normal",
+      // mode: "movie",
       pageNumber,
       pageSize,
       visible: 1,

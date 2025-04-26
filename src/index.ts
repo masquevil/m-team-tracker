@@ -5,6 +5,7 @@ import {
   isEndTimeGreaterThanTwoDays,
   isEndTimeGreaterThanOneDays,
 } from ":utils/time";
+import { isSizeLessThan30GB } from ":utils/size";
 
 async function run() {
   await createDownloadDirectory();
@@ -19,6 +20,7 @@ async function run() {
       // case 2: discount
       (torrent.status.discount === "FREE" &&
         +torrent.status.leechers > +torrent.status.seeders &&
+        isSizeLessThan30GB(torrent.size) &&
         isEndTimeGreaterThanOneDays(torrent.status.discountEndTime))
   );
 
