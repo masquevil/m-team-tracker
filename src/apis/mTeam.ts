@@ -36,68 +36,37 @@ export async function searchMTeamTorrents(
       },
     }
   );
-  const allRes = await axios.post(
-    "https://api.m-team.io/api/torrent/search",
-    {
-      // mode: "movie",
-      pageNumber,
-      pageSize,
-      visible: 1,
-      categories: [],
-      discount: "FREE",
-      sortField: "leechers",
-      sortType: "desc",
-    },
-    {
-      headers: {
-        "x-api-key": getMTeamAPIToken(),
-      },
-    }
-  );
+  // const allRes = await axios.post(
+  //   "https://api.m-team.io/api/torrent/search",
+  //   {
+  //     // mode: "movie",
+  //     pageNumber,
+  //     pageSize,
+  //     visible: 1,
+  //     categories: [],
+  //     discount: "FREE",
+  //     sortField: "leechers",
+  //     sortType: "desc",
+  //   },
+  //   {
+  //     headers: {
+  //       "x-api-key": getMTeamAPIToken(),
+  //     },
+  //   }
+  // );
 
   if (
     adultRes.status !== 200 ||
     adultRes.data.message !== "SUCCESS" ||
-    allRes.status !== 200 ||
-    allRes.data.message !== "SUCCESS"
+    // allRes.status !== 200 ||
+    // allRes.data.message !== "SUCCESS" ||
+    false
   ) {
     throw new Error("Failed to fetch M-Team torrents");
   }
 
-  const data = [...adultRes.data.data.data, ...allRes.data.data.data];
-
-  // console.log(
-  //   "\n\nsearch result:",
-  //   data.map(
-  //     ({
-  //       id,
-  //       name,
-  //       smallDescr,
-  //       status: {
-  //         discount,
-  //         discountEndTime,
-  //         toppingLevel,
-  //         toppingEndTime,
-  //         seeders,
-  //         leechers,
-  //         mallSingleFree,
-  //       },
-  //     }) => ({
-  //       id,
-  //       name,
-  //       smallDescr,
-  //       status: {
-  //         discount,
-  //         discountEndTime,
-  //         toppingLevel,
-  //         toppingEndTime,
-  //         seeders,
-  //         leechers,
-  //       },
-  //       mallSingleFree,
-  //     })
-  //   )
-  // );
+  // const data = [...adultRes.data.data.data, ...allRes.data.data.data];
+  const data = [...adultRes.data.data.data];
 
   return data;
 }
